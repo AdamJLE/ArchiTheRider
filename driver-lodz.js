@@ -24,21 +24,20 @@ let hasNpc = false;
 
 
 let npcs = [
-    {"x": 2100 * 0.6, "y": 700 * 0.6},
-    {"x": 1000, "y": 1000}
+    /* {loc: [2100 * 0.6, 700 * 0.6]} */
 ];
 let landmarks = [
-    {"x": 1000, "y": 1200, "name": "{{NAME}}", "description": "{{DESC}}"}
+    {loc: [1000, 1200], name: "{{NAME}}", description: "{{DESC}}"}
 ];
 
 let input = [];
 
 const init = () => {
-    for(let i = 0; i < 15; i++) {
-        npcs[i] = {"x": Math.floor((Math.random() * 2000) + 1), "y": Math.floor((Math.random() * 2000) + 1)};
-        landmarks[i] = {"x": Math.floor((Math.random() * 2000) + 1), "y": Math.floor((Math.random() * 2000) + 1), "name": "{{NAME}}", "description": "{{DESC}}"};
+    for (let i = 0; i < 15; i++) {
+        npcs[i] = {loc: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)]};
+        landmarks[i] = {loc: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)], name: "{{NAME}}", description: "{{DESC}}"};
     }
-    
+
     document.getElementById("pre-game").style.transform = "translateY(0)";
     setTimeout(() => {
         document.getElementById("logo").style.transform = "translateY(0)";
@@ -78,51 +77,54 @@ const start = () => {
     car = document.getElementById("car");
     background = document.getElementById("map");
 
-    document.getElementById("accelerate").addEventListener('touchstart', () => {
-        act('accelerate', true);
-    });
-    document.getElementById("accelerate").addEventListener('touchend', () => {
-        act('accelerate', false);
-    });
-    document.getElementById("accelerate").addEventListener('mousedown', () => {
-        act('accelerate', true);
-    });
-    document.getElementById("accelerate").addEventListener('mouseup', () => {
-        act('accelerate', false);
-    });
+    // I indented this so I could collapse it in my IDE
+    {
+        document.getElementById("accelerate").addEventListener('touchstart', () => {
+            act('accelerate', true);
+        });
+        document.getElementById("accelerate").addEventListener('touchend', () => {
+            act('accelerate', false);
+        });
+        document.getElementById("accelerate").addEventListener('mousedown', () => {
+            act('accelerate', true);
+        });
+        document.getElementById("accelerate").addEventListener('mouseup', () => {
+            act('accelerate', false);
+        });
 
-    document.getElementById("left").addEventListener('touchstart', () => {
-        act('left', true);
-    });
-    document.getElementById("left").addEventListener('touchend', () => {
-        act('left', false);
-    });
-    document.getElementById("left").addEventListener('mousedown', () => {
-        act('left', true);
-    });
-    document.getElementById("left").addEventListener('mouseup', () => {
-        act('left', false);
-    });
+        document.getElementById("left").addEventListener('touchstart', () => {
+            act('left', true);
+        });
+        document.getElementById("left").addEventListener('touchend', () => {
+            act('left', false);
+        });
+        document.getElementById("left").addEventListener('mousedown', () => {
+            act('left', true);
+        });
+        document.getElementById("left").addEventListener('mouseup', () => {
+            act('left', false);
+        });
 
-    document.getElementById("right").addEventListener('touchstart', () => {
-        act('right', true);
-    });
-    document.getElementById("right").addEventListener('touchend', () => {
-        act('right', false);
-    });
-    document.getElementById("right").addEventListener('mousedown', () => {
-        act('right', true);
-    });
-    document.getElementById("right").addEventListener('mouseup', () => {
-        act('right', false);
-    });
+        document.getElementById("right").addEventListener('touchstart', () => {
+            act('right', true);
+        });
+        document.getElementById("right").addEventListener('touchend', () => {
+            act('right', false);
+        });
+        document.getElementById("right").addEventListener('mousedown', () => {
+            act('right', true);
+        });
+        document.getElementById("right").addEventListener('mouseup', () => {
+            act('right', false);
+        });
+    }
 
     for (let i = 0; i < npcs.length; i++) {
         let npc = npcs[i];
         let div = document.createElement("div");
         div.setAttribute("class", "npc");
-        div.setAttribute("data-x", npc.x);
-        div.setAttribute("data-y", npc.y);
+        div.setAttribute("data-x", npc.loc[0]);
+        div.setAttribute("data-y", npc.loc[1]);
         document.getElementById("hideable").appendChild(div);
     }
 
@@ -130,8 +132,10 @@ const start = () => {
         let landmark = landmarks[i];
         let div = document.createElement("div");
         div.setAttribute("class", "landmark");
-        div.setAttribute("data-x", landmark.x);
-        div.setAttribute("data-y", landmark.y);
+        div.setAttribute("data-x", landmark.loc[0]);
+        div.setAttribute("data-y", landmark.loc[1]);
+        div.setAttribute("data-name", landmark.name);
+        div.setAttribute("data-description", landmark.description);
         document.getElementById("hideable").appendChild(div);
     }
 
@@ -167,7 +171,7 @@ const updatePos = () => {
     carVY *= drag;
 
     car.style.transform = "translateX(" + (480 / 2) + "px) translateY(" + (720 / 1.5) + "px) rotate(" + (carDir) + "deg)";
-    background.style.transform = "rotateX(15deg) translateX(" + (-posX + offX) + "px) translateY(" + (-posY + offY) + "px)";
+    background.style.transform = "translateX(" + (-posX + offX) + "px) translateY(" + (-posY + offY) + "px)";
 
     let npcDivs = document.getElementsByClassName("npc");
     let landmarkDivs = document.getElementsByClassName("landmark");
