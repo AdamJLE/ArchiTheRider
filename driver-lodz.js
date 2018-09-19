@@ -1,3 +1,5 @@
+// this is a hacky mess, don't judge me
+
 let carVX = 0;
 let carVY = 0;
 
@@ -11,7 +13,7 @@ let carY = 720 / 1.5;
 let carDir = 0;
 
 let drag = 0.925;
-let speed = 0.6; // will need to be tuned depending on the map size
+let speed = 0.65; // will need to be tuned depending on the map size
 let turnSpeed = 0.4; // ^
 let moving = false;
 let left = false;
@@ -21,27 +23,31 @@ let car;
 
 let background;
 let hasNpc = false;
+let currentDestination;
+let waypoint;
 
+let npcTemp;
+let promptingForNpc;
 
-let npcs = [
-    /* {loc: [2100 * 0.6, 700 * 0.6]} */
-];
-let landmarks = [
-    {loc: [1000, 1200], name: "{{NAME}}", description: "{{DESC}}"}
-];
+let npcs = [];
+let landmarks = [];
 
 let input = [];
 
 const init = () => {
-    for (let i = 0; i < 15; i++) {
-        npcs[i] = {loc: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)]};
-        landmarks[i] = {loc: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)], name: "{{NAME}}", description: "{{DESC}}"};
+
+    for (let i = 0; i < 20; i++) {
+        npcs[i] = {loc: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)],
+            destination: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)]};
+        landmarks[i] = {loc: [Math.floor((Math.random() * 2000) + 1), Math.floor((Math.random() * 2000) + 1)],
+            name: "{{NAME}}", description: "{{DESC}}"};
     }
 
     document.getElementById("pre-game").style.transform = "translateY(0)";
     setTimeout(() => {
         document.getElementById("logo").style.transform = "translateY(0)";
         setTimeout(() => {
+            document.getElementById("home-screen").style.background = "#F1F2F1";
             document.getElementById("logo").style.transform = "translateY(-854px)";
             document.getElementById("intro").style.opacity = "0";
             setTimeout(() => {
@@ -76,48 +82,7 @@ const start = () => {
 
     car = document.getElementById("car");
     background = document.getElementById("map");
-
-    // I indented this so I could collapse it in my IDE
-    {
-        document.getElementById("accelerate").addEventListener('touchstart', () => {
-            act('accelerate', true);
-        });
-        document.getElementById("accelerate").addEventListener('touchend', () => {
-            act('accelerate', false);
-        });
-        document.getElementById("accelerate").addEventListener('mousedown', () => {
-            act('accelerate', true);
-        });
-        document.getElementById("accelerate").addEventListener('mouseup', () => {
-            act('accelerate', false);
-        });
-
-        document.getElementById("left").addEventListener('touchstart', () => {
-            act('left', true);
-        });
-        document.getElementById("left").addEventListener('touchend', () => {
-            act('left', false);
-        });
-        document.getElementById("left").addEventListener('mousedown', () => {
-            act('left', true);
-        });
-        document.getElementById("left").addEventListener('mouseup', () => {
-            act('left', false);
-        });
-
-        document.getElementById("right").addEventListener('touchstart', () => {
-            act('right', true);
-        });
-        document.getElementById("right").addEventListener('touchend', () => {
-            act('right', false);
-        });
-        document.getElementById("right").addEventListener('mousedown', () => {
-            act('right', true);
-        });
-        document.getElementById("right").addEventListener('mouseup', () => {
-            act('right', false);
-        });
-    }
+    waypoint = document.getElementById("waypoint");
 
     for (let i = 0; i < npcs.length; i++) {
         let npc = npcs[i];
@@ -125,6 +90,8 @@ const start = () => {
         div.setAttribute("class", "npc");
         div.setAttribute("data-x", npc.loc[0]);
         div.setAttribute("data-y", npc.loc[1]);
+        div.setAttribute("data-destination-x", npc.destination[0]);
+        div.setAttribute("data-destination-y", npc.destination[1]);
         document.getElementById("hideable").appendChild(div);
     }
 
@@ -172,6 +139,9 @@ const updatePos = () => {
 
     car.style.transform = "translateX(" + (480 / 2) + "px) translateY(" + (720 / 1.5) + "px) rotate(" + (carDir) + "deg)";
     background.style.transform = "translateX(" + (-posX + offX) + "px) translateY(" + (-posY + offY) + "px)";
+    if (currentDestination) {
+        waypoint.style.transform = "translateX(" + (-posX + offX + currentDestination[0]) + "px) translateY(" + (-posY + offY + currentDestination[1]) + "px)";
+    }
 
     let npcDivs = document.getElementsByClassName("npc");
     let landmarkDivs = document.getElementsByClassName("landmark");
@@ -194,6 +164,72 @@ const updatePos = () => {
         }
     }
 
+    checkNpc();
+
+};
+
+const checkNpc = () => {
+    if (!hasNpc && !promptingForNpc) {
+        let npcs = document.getElementsByClassName("npc");
+        for (let i = 0; i < npcs.length; i++) {
+            let npc = npcs[i];
+            let transform = window.getComputedStyle(npc).getPropertyValue("transform");
+            let coords = transform.replace("matrix(1, 0, 0, 1, ", "").replace(")", "").split(", ");
+
+            if (coords[0] >= 225 && coords[0] <= 275) {
+                if (coords[1] >= 450 && coords[1] <= 500) {
+                    promptForNpc(npc);
+                    promptingForNpc = true;
+                }
+            }
+        }
+    }
+
+    if (hasNpc && !promptingForNpc) {
+        // (-posX + offX + currentDestination[0]) to 240
+        // (-posY + offY + currentDestination[1]) to 480
+        let distance = Math.sqrt(Math.pow((-posX + offX + currentDestination[0]) - 240, 2) + Math.pow((-posY + offY + currentDestination[1]) - 480, 2));
+        if (distance < 40) {
+            document.getElementById("distance").innerHTML = "Passenger delivered!";
+            /* setTimeout(() => {
+             document.getElementById("npc-prompt").style.transform = "";
+             document.getElementById("npc-prompt").style.height = "";
+             document.getElementById("ask").style.opacity = "";
+             document.getElementById("ask").style.height = "";
+             document.getElementById("show").style.height = "";
+             document.getElementById("show").style.opacity = "";
+             document.getElementById("waypoint").style.transform = "";
+             }, 3000);
+             hasNpc = false; */
+        } else {
+            document.getElementById("distance").innerHTML = Math.floor(distance * 10) / 10 + " metres away from your destination.";
+        }
+    }
+};
+
+const promptForNpc = (npc) => {
+    npcTemp = npc;
+    document.getElementById("npc-prompt").style.transform = "translateX(0)";
+};
+
+const acceptNpc = () => {
+
+    let destination = [parseInt(npcTemp.getAttribute("data-destination-x")), parseInt(npcTemp.getAttribute("data-destination-y"))];
+    hasNpc = true;
+    npcTemp.parentNode.removeChild(npcTemp);
+    currentDestination = destination;
+    document.getElementById("npc-prompt").style.transform = "translateY(570px)";
+    document.getElementById("npc-prompt").style.height = "150px";
+    document.getElementById("ask").style.opacity = "0";
+    document.getElementById("ask").style.height = "150px";
+    document.getElementById("show").style.height = "150px";
+    document.getElementById("show").style.opacity = "1";
+    promptingForNpc = false;
+};
+
+const denyNpc = () => {
+    document.getElementById("npc-prompt").style.transform = "";
+    promptingForNpc = false;
 };
 
 const radians = (degrees) => {

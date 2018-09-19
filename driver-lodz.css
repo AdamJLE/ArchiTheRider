@@ -6,9 +6,22 @@
     font-family: "Arial", sans-serif;
 }
 
+#iphone-bg {
+    background: url("iphone.jpg") no-repeat;
+    background-position: center;
+    transform: scale(1.23) translateY(0.45rem);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+}
+
+#skip button {
+    cursor: pointer;
+}
+
 #driver-lodz {
-    box-shadow: 0 0 50px -30px black;
-    border-radius: 0.5rem;
     top: calc(50vh - 426px);
     left: calc(50vw - 240px);
     width: 480px;
@@ -63,7 +76,7 @@
 
 #instructions button:hover {
     transform: translateY(-0.3rem);
-    box-shadow: 0 0.3rem 40px -20px #FE026A;
+    box-shadow: 0 0.3rem 40px -20px rgba(0, 0, 0, 0.5);
 }
 
 #intro-header, #instr-list, #instructions button {
@@ -149,6 +162,7 @@
 }
 
 #car {
+    z-index: 99999999;
     top: 0;
     left: 0;
     width: 50px;
@@ -262,6 +276,68 @@ body {
     transform: translateX(2400px);
 }
 
+#show {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#npc-prompt, #ask, #show {
+    text-align: center;
+    transition: 0.5s;
+    height: 250px;
+    width: 400px;
+    border-radius: 2rem;
+    left: calc(50% - 200px);
+    z-index: 999999999;
+    background-color: #fff;
+}
+
+#npc-prompt {
+    box-shadow: 0 0 50px -30px rgba(0, 0, 0, 0.5);
+    top: 100px;
+    transform: translateY(960px);
+}
+
+#npc-icon {
+    background-image: url("npcicon.png");
+    background-size: cover;
+    margin: 36px;
+    height: 72px;
+    width: 72px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#npc-prompt .choice {
+    bottom: 24px;
+    font-size: 20px;
+    display: inline-block;
+    background-color: lightgrey;
+    padding: 20px 50px;
+    border-radius: 50px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+#npc-prompt .choice:hover {
+    transform: translateY(-0.3rem);
+    box-shadow: 0 0.3rem 40px -20px rgba(0, 0, 0, 0.5);
+}
+
+#acceptNpc {
+    background-color: #EDFE00 !important;
+    right: 24px;
+}
+
+#denyNpc {
+    left: 24px;
+}
+
+#triple-dot-menu {
+    list-style: none;
+}
+
 #sign-in-form, #question-form {
     transition: 0.5s;
 }
@@ -271,6 +347,7 @@ body {
 }
 
 .buttn {
+    opacity: 0;
     position: absolute;
     width: 80px;
     height: 80px;
@@ -309,7 +386,7 @@ body {
     right: 0;
     position: fixed;
     padding: 0.5rem;
-    box-shadow: 0 0 50px -30px black;
+    box-shadow: 0 0 50px -30px rgba(0, 0, 0, 0.5);
     transform: translateX(300px);
     transition: 0.5s;
     transition-property: transform;
@@ -326,9 +403,28 @@ body {
     max-height: 180px;
 }
 
+#home-screen {
+    background: url(app.png) no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 100%;
+}
+
 #landmarkDescription {
     position: absolute;
     bottom: 0;
+}
+
+#waypoint {
+    border-radius: 50%;
+    transform: translateX(10000px) translateY(10000px);
+    height: 24px;
+    width: 24px;
+    background-color: skyblue;
+}
+
+#distance {
+    margin: 20px;
 }
 
 .npc {

@@ -7,13 +7,19 @@
         <link href="driver-lodz.css" rel="stylesheet" type="text/css"/>
         <script src="driver-lodz.js" type="text/javascript"></script>
 
+        <script src="index.min.js"></script>
+        
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous"> 
 
     </head>
-    <body onload="init()">
+    <body>
 
+        <div id='iphone-bg'></div>
+        
         <div id="driver-lodz">
-
+            
+            <div id='home-screen' onclick='init()'><div id='app-icon'></div></div>
+            
             <div id="pre-game">
 
                 <div id="intro" class="page">
@@ -33,15 +39,26 @@
 
                 <img id="map" src="bg.png" alt="">
                 <div id="car"></div>
+                
+                <div id='waypoint'></div>
 
-                <div id="accelerate" class="buttn"></div>
-                <div id="left" class="buttn"></div>
-                <div id="right" class="buttn"></div>
-                
-                <div id="charicon"></div>
-                <div id="books"></div>
-                <div id="coins"></div>
-                
+                <ul id="triple-dot-menu">
+                    <li id="charicon"></li>
+                    <li id="books"></li>
+                    <li id="coins"></li>
+                </ul>
+
+                <div id="npc-prompt">
+                    <div id='ask'>
+                        <div id="npc-icon"></div>
+                        <div class="choice" onclick="acceptNpc()" id="acceptNpc">LET'S GO!</div>
+                        <div class="choice" onclick="denyNpc()" id="denyNpc">NO</div>
+                    </div>
+                    <div id='show'>
+                        <div id='distance'></div>
+                    </div>
+                </div>
+
                 <div id="showLandmark">
                     <div id="landmarkName">Added to your journal!</div>
                     <div id="landmarkImage"><img id="landmarkImg" src="lodz.jpg" alt=""/></div>
